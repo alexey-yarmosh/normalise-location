@@ -1,11 +1,13 @@
 import { stringifyStream } from '@discoveryjs/json-ext';
+import anyAscii from 'any-ascii';
+
 import consola from 'consola';
 import { parse } from 'csv-parse';
 import * as fs from 'node:fs';
 import * as path from 'pathe';
 
-import altNamesV2 from '../data/geocodeNames.json';
-import geocodesImport from '../data/geocodes.json';
+import geocodeNamesJSON from '../data/geocodeNames.json';
+import alternateNamesJSON from '../data/alternateNames.json';
 import { FeatureCodes, LocationCountry, LocationObj, Locations } from '../src/types';
 import type { AltFinalLocation, GeocodeRecord } from './types';
 import { updateRecord } from './utils';
@@ -50,10 +52,9 @@ V: forest,heath,...
 We only want to keep A and P. Remove all others. */
 
 const readStream = fs.createReadStream(path.join(process.cwd(), 'dump/raw/allCountries.txt'), { encoding: 'utf8' });
-// const writeStream = fs.createWriteStream(path.join(process.cwd(), 'data/alternateNames.json'), { encoding: 'utf8' });
 const writeStreamCountry = fs.createWriteStream(path.join(process.cwd(), 'data/alternateNamesCountry.json'), { encoding: 'utf8' });
-const preferredNames = altNamesV2 as AltFinalLocation;
-const usableGeocodes = new Set(geocodesImport as string[]);
+const geocodeNames = geocodeNamesJSON as AltFinalLocation;
+const alternateNames = alternateNamesJSON as Record<string, string[]>;
 
 // const records: Locations = {};
 
@@ -71,12 +72,15 @@ parser.on('readable', () => {
   // eslint-disable-next-line no-cond-assign
   while ((record = parser.read()) !== null) {
     const geonameId = record[0];
-    if (usableGeocodes.has(geonameId)) {
-      const preferredName = preferredNames[geonameId] ?? record[1];
+    if (alternateNames[geonameId]) {
+      const preferredName = geocodeNames[geonameId] ?? record[1];
       // Use set to get rid of duplicates
-      const nameSet = record[3] === '' ? new Set([]) : new Set(record[3].split(','));
-      // Just in case preferred name doesn't exist
-      nameSet.add(preferredName);
+      const nameSet = new Set([
+        preferredName,
+        anyAscii(preferredName),
+        ...alternateNames[geonameId],
+        ...alternateNames[geonameId].map(anyAscii),
+      ]);
 
       const recordObj: LocationObj = {
         names: [...nameSet],

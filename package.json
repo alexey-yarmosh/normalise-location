@@ -43,6 +43,7 @@
   "dependencies": {
     "@discoveryjs/json-ext": "^0.5.7",
     "adm-zip": "^0.5.9",
+    "any-ascii": "^0.3.2",
     "consola": "^2.15.3",
     "csv-parse": "^5.3.0",
     "got": "^12.3.0",

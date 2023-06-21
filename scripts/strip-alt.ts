@@ -5,7 +5,6 @@ import * as fs from 'node:fs';
 import * as path from 'pathe';
 
 import geocodesImport from '../data/geocodes.json';
-import type { AltFinalLocation } from './types';
 
 /*
 The table 'alternate names' :
@@ -28,12 +27,11 @@ isShortName takes precedence, if none, isPreferredName takes precedence, else sk
 type Record = [alternateNameid: string, geonameid: string, isolanguage: string, alternateName: string, isPreferredName: string, isShortName: string, isColloquial: string, isHistoric: string, from: string, to: string];
 
 const readStream = fs.createReadStream(path.join(process.cwd(), 'dump/raw/alternateNamesV2.txt'), { encoding: 'utf8' });
-const writeStream = fs.createWriteStream(path.join(process.cwd(), 'data/geocodeNames.json'), { encoding: 'utf8' });
+const writeStream = fs.createWriteStream(path.join(process.cwd(), 'data/alternateNames.json'), { encoding: 'utf8' });
 const usableGeocodes = new Set(geocodesImport as string[]);
 
-type LocationRecord = [alternateName: string, isPreferredName: number, isShortName: number, iso: string]
 interface Locations {
-  [geonameid: string]: LocationRecord;
+  [geonameid: string]: string[];
 }
 const records: Locations = {};
 // Initialize the parser
@@ -43,59 +41,22 @@ const parser = parse({
   relax_quotes: true,
 });
 
-
-const updateRecord = (oldRecord: LocationRecord, newRecord: LocationRecord): LocationRecord => {
-  const isEn = [oldRecord[3] === 'en', newRecord[3] === 'en'];
-  const isShort = [oldRecord[2] === 1, newRecord[2] === 1];
-  const isPreferred = [oldRecord[1] === 1, newRecord[1] === 1];
-  const isShortPreferred = [isShort[0] && isPreferred[0], isShort[1] && isPreferred[1]];
-
-  // If new record short name and preferred and English, highest priority
-  if (isShortPreferred[1] && isEn[1])
-    return newRecord;
-
-  // If new record short and English, and old record is not short
-  if (isShort[1] && isEn[1] && !isShort[0])
-    return newRecord;
-
-  // If new is preferred and English and old is not preferred or short
-  if (isPreferred[1] && isEn[1] && !isPreferred[0] && !isShort[0])
-    return newRecord;
-
-  // If new is short and preferred and and old is not short or preferred or English
-  /* if (!isShortPreferred[0] && isShortPreferred[1] && !isEn[0])
-    return newRecord; */
-
-  // If new is short and not short
-  // if (!isShort[0] && isShort[1] && !isEn[0])
-  // return newRecord;
-
-  // If old record isn't english, short and preferred and new record is english
-  if (!isEn[0] && isEn[1])
-    return newRecord;
-
-  return oldRecord;
-};
-
 parser.on('readable', () => {
   let record: Record;
   // eslint-disable-next-line no-cond-assign
   while ((record = parser.read()) !== null) {
     const geonameId = record[1];
     const iso = record[2];
+    const altName = record[3];
     // Only refer to iso country codes or undefined, skip post or links, or historical or colloquial
-    if (usableGeocodes.has(geonameId) && iso.length <= 3 && record[6] !== '1' && record[7] !== '1') {
-      // Remove city, town, the names .replace(/[(),.:]/g, '').replace(/-/g, ' ').replace(/s{2,}/g, ' ')
-      const alternateName = record[3].replace(/(?:\s+|^)(?:the|city|district)(?:\s+|$)/gi, '').trim();
-      const isPreferredName = record[4] === '' ? 0 : 1;
-      const isShortName = record[5] === '' ? 0 : 1;
-      const newRecord: LocationRecord = [alternateName, isPreferredName, isShortName, iso];
+    // if (usableGeocodes.has(geonameId) && iso.length <= 3 && record[6] !== '1' && record[7] !== '1') {
 
-      // If record doesn't exist, just add any option
+    // Only refer to iso country codes or undefined, skip post or links, or colloquial
+    if (usableGeocodes.has(geonameId) && iso.length <= 3 && record[6] !== '1') {
       if (!records[geonameId]) {
-        records[geonameId] = newRecord;
+        records[geonameId] = [altName];
       } else {
-        records[geonameId] = updateRecord(records[geonameId], newRecord);
+        records[geonameId].push(altName);
       }
     }
   }
@@ -107,14 +68,9 @@ parser.on('error', (err) => {
 
 parser.on('end', async () => {
   consola.success('Finished parsing.');
-  const newRecords: AltFinalLocation = {};
-  for (const geonameId of Object.keys(records)) {
-    const altName = records[geonameId][0];
-    newRecords[geonameId] = altName;
-  }
-  consola.success('Finished cleaning records.');
+
   const write = new Promise((resolve, reject) => {
-    stringifyStream(newRecords, undefined, 2)
+    stringifyStream(records, undefined, 2)
       .on('error', reject)
       .pipe(writeStream)
       .on('error', reject)
