@@ -77,7 +77,8 @@ parser.on('readable', () => {
       // Use set to get rid of duplicates
       const nameSet = new Set([
         preferredName,
-        anyAscii(preferredName),
+        record[1],
+        anyAscii(record[1]),
         ...alternateNames[geonameId],
         ...alternateNames[geonameId].map(anyAscii),
       ]);

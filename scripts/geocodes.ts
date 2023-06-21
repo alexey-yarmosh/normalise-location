@@ -1,3 +1,4 @@
+import anyAscii from 'any-ascii';
 import consola from 'consola';
 import { parse } from 'csv-parse';
 import { stringifyStream } from '@discoveryjs/json-ext';
@@ -5,6 +6,22 @@ import * as fs from 'node:fs';
 import * as path from 'pathe';
 import type { GeocodeRecord } from './types';
 import { isFeatureCode } from '../src/types';
+
+//////////// CITY NORMALIZATION FROM GLOBALPING API
+
+const cities: Record<string, string> = {
+	'Geneve': 'Geneva',
+	'Frankfurt am Main': 'Frankfurt',
+	'New York City': 'New York',
+};
+
+const normalizeCityNamePublic = (name: string): string => {
+	// We don't add city to the regex as there are valid names like 'Mexico City' or 'Kansas City'
+	const asciiName = anyAscii(name).replace(/(?:\s+|^)the(?:\s+|$)/gi, '');
+	return cities[asciiName] ?? asciiName;
+};
+
+///////////////////////////////////////////////
 
 const readStream = fs.createReadStream(path.join(process.cwd(), 'dump/raw/allCountries.txt'), { encoding: 'utf8' });
 const writeStreamGeocodes = fs.createWriteStream(path.join(process.cwd(), 'data/geocodes.json'), { encoding: 'utf8' });
@@ -27,7 +44,7 @@ parser.on('readable', () => {
     const population = Number(record[14]);
     if (population > 0 && isFeatureCode(record[7])) {
       geocodes.push(record[0]);
-      geocodeNames[record[0]] = record[1];
+      geocodeNames[record[0]] = normalizeCityNamePublic(record[1]);
     }
   }
 });

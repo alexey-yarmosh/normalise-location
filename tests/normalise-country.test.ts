@@ -11,22 +11,22 @@ describe('normalise location countries', () => {
     expect(normaliseLocation('st petersburg', { country: 'RU' })).to.equal('Saint Petersburg');
   });
 
-  it('Nürnberg DE', () => {
-    expect(normaliseLocation('Nürnberg', { country: 'DE' })).to.equal('Nürnberg');
-    expect(normaliseLocation('Nuremberg', { country: 'DE' })).to.equal('Nürnberg');
-    expect(normaliseLocation('nuremberg', { country: 'DE' })).to.equal('Nürnberg');
+  it('Nurnberg DE', () => {
+    expect(normaliseLocation('Nürnberg', { country: 'DE' })).to.equal('Nurnberg');
+    expect(normaliseLocation('Nuremberg', { country: 'DE' })).to.equal('Nurnberg');
+    expect(normaliseLocation('nuremberg', { country: 'DE' })).to.equal('Nurnberg');
   });
 
-  it('Santiago de Querétaro MX', () => {
-    expect(normaliseLocation('Querétaro City', { country: 'MX' })).to.equal('Santiago de Querétaro');
-    expect(normaliseLocation('Santiago de Querétaro', { country: 'MX' })).to.equal('Santiago de Querétaro');
-    expect(normaliseLocation('santiago de queretaro', { country: 'MX' })).to.equal('Santiago de Querétaro');
+  it('Santiago de Queretaro MX', () => {
+    expect(normaliseLocation('Querétaro City', { country: 'MX' })).to.equal('Santiago de Queretaro');
+    expect(normaliseLocation('Santiago de Querétaro', { country: 'MX' })).to.equal('Santiago de Queretaro');
+    expect(normaliseLocation('santiago de queretaro', { country: 'MX' })).to.equal('Santiago de Queretaro');
   });
 
   it('Frankfurt am Main DE', () => {
-    expect(normaliseLocation('Frankfurt am Main', { country: 'DE' })).to.equal('Frankfurt am Main');
-    expect(normaliseLocation('frankfurt am main', { country: 'DE' })).to.equal('Frankfurt am Main');
-    expect(normaliseLocation('Frankfurt', { country: 'DE' })).to.equal('Frankfurt am Main');
+    expect(normaliseLocation('Frankfurt am Main', { country: 'DE' })).to.equal('Frankfurt');
+    expect(normaliseLocation('frankfurt am main', { country: 'DE' })).to.equal('Frankfurt');
+    expect(normaliseLocation('Frankfurt', { country: 'DE' })).to.equal('Frankfurt');
   });
 
   it('Frankfurt am Main DE', () => {
@@ -56,14 +56,14 @@ describe('normalise location countries', () => {
   });
 
   it('Sao Paulo BR', () => {
-    expect(normaliseLocation('Sao Paulo', { country: 'BR' })).to.equal('São Paulo');
-    expect(normaliseLocation('São Paulo', { country: 'BR' })).to.equal('São Paulo');
+    expect(normaliseLocation('Sao Paulo', { country: 'BR' })).to.equal('Sao Paulo');
+    expect(normaliseLocation('São Paulo', { country: 'BR' })).to.equal('Sao Paulo');
     // expect(normaliseLocation('San Paulo', { country: 'BR' })).to.equal('São Paulo'); // Not a valid input
   });
 
-  it('Montréal CA', () => {
-    expect(normaliseLocation('Montreal', { country: 'CA' })).to.equal('Montréal');
-    expect(normaliseLocation('Montréal', { country: 'CA' })).to.equal('Montréal');
+  it('Montreal CA', () => {
+    expect(normaliseLocation('Montreal', { country: 'CA' })).to.equal('Montreal');
+    expect(normaliseLocation('Montréal', { country: 'CA' })).to.equal('Montreal');
   });
 
   it('Toronto CA', () => {
@@ -77,29 +77,28 @@ describe('normalise location countries', () => {
     // expect(normaliseLocation('Bezirk Andelfingen', { country: 'CH' })).to.equal('Andelfingen'); // It is a district
   });
 
-  it('Genève CH', () => {
-    expect(normaliseLocation('Geneva', { country: 'CH' })).to.equal('Genève');
-    expect(normaliseLocation('Genève', { country: 'CH' })).to.equal('Genève');
-    expect(normaliseLocation('Geneve', { country: 'CH' })).to.equal('Genève');
+  it('Geneve CH', () => {
+    expect(normaliseLocation('Geneva', { country: 'CH' })).to.equal('Geneva');
+    expect(normaliseLocation('Genève', { country: 'CH' })).to.equal('Geneva');
+    expect(normaliseLocation('Geneve', { country: 'CH' })).to.equal('Geneva');
     // expect(normaliseLocation('Canton of Geneva', { country: 'CH' })).to.equal('Genève'); // It is a district
     // expect(normaliseLocation('Canton de Genève', { country: 'CH' })).to.equal('Genève'); // It is a district
     // expect(normaliseLocation('CH013', { country: 'CH' })).to.equal('Genève'); // Not a valid input
   });
 
   it('Ceske Budejovice CZ', () => {
-    expect(normaliseLocation('Ceske Budejovice', { country: 'CZ' })).to.equal('České Budějovice');
-    expect(normaliseLocation('České Budějovice', { country: 'CZ' })).to.equal('České Budějovice');
+    expect(normaliseLocation('Ceske Budejovice', { country: 'CZ' })).to.equal('Ceske Budejovice');
+    expect(normaliseLocation('České Budějovice', { country: 'CZ' })).to.equal('Ceske Budejovice');
     // expect(normaliseLocation('Okres České Budějovice', { country: 'CZ' })).to.equal('České Budějovice'); // It is a district
     // expect(normaliseLocation('Ceske Budejovice District', { country: 'CZ' })).to.equal('České Budějovice'); // It is a district
   });
 
   it('Dusseldorf DE', () => {
-    expect(normaliseLocation('Dusseldorf', { country: 'DE' })).to.equal('Düsseldorf');
-    expect(normaliseLocation('Düsseldorf', { country: 'DE' })).to.equal('Düsseldorf');
+    expect(normaliseLocation('Dusseldorf', { country: 'DE' })).to.equal('Dusseldorf');
+    expect(normaliseLocation('Düsseldorf', { country: 'DE' })).to.equal('Dusseldorf');
   });
 
   it('Frankfurt DE', () => {
-    expect(normaliseLocation('Frankfurt am Main', { country: 'DE' })).to.equal('Frankfurt am Main');
     // expect(normaliseLocation('Frankfort', { country: 'DE' })).to.equal('Frankfurt am Main'); // Not a valid input
   });
 
@@ -129,9 +128,9 @@ describe('normalise location countries', () => {
   });
 
   it('Petaẖ Tiqva IL', () => {
-    expect(normaliseLocation('Petah Tikva', { country: 'IL' })).to.equal('Petaẖ Tiqva');
-    expect(normaliseLocation('Petaẖ Tiqva', { country: 'IL' })).to.equal('Petaẖ Tiqva');
-    expect(normaliseLocation('Petah Tikwah', { country: 'IL' })).to.equal('Petaẖ Tiqva');
+    expect(normaliseLocation('Petah Tikva', { country: 'IL' })).to.equal('Petah Tiqva');
+    expect(normaliseLocation('Petaẖ Tiqva', { country: 'IL' })).to.equal('Petah Tiqva');
+    expect(normaliseLocation('Petah Tikwah', { country: 'IL' })).to.equal('Petah Tiqva');
   });
 
   it('New Delhi IN', () => {
@@ -173,8 +172,8 @@ describe('normalise location countries', () => {
   });
 
   it('Kraków PL', () => {
-    expect(normaliseLocation('Krakow', { country: 'PL' })).to.equal('Kraków');
-    expect(normaliseLocation('Kraków', { country: 'PL' })).to.equal('Kraków');
+    expect(normaliseLocation('Krakow', { country: 'PL' })).to.equal('Krakow');
+    expect(normaliseLocation('Kraków', { country: 'PL' })).to.equal('Krakow');
   });
 
   it('Bahçelievler TR', () => {
@@ -217,8 +216,8 @@ describe('normalise location countries', () => {
   });
 
   it('New York City US', () => {
-    expect(normaliseLocation('New York', { country: 'US' })).to.equal('New York City');
-    expect(normaliseLocation('New York City', { country: 'US' })).to.equal('New York City');
+    expect(normaliseLocation('New York', { country: 'US' })).to.equal('New York');
+    expect(normaliseLocation('New York City', { country: 'US' })).to.equal('New York');
     // expect(normaliseLocation('New York State', { country: 'US' })).to.equal('New York City'); // It is a district
   });
 
